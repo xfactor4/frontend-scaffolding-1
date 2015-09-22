@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title></title>
+
+    <!--build:css css/vendor.min.css-->
+    <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+    <!--endbuild-->
+
+    <!--build:css css/app.min.css-->
+    <link rel="stylesheet" href="dist/styles/main.css">
+    <!--endbuild-->
+
+    <!--build:js scripts/modernizr.min.js-->
+    <script src="bower_components/modernizr/modernizr.js"></script>
+    <!--endbuild-->
+  </head>
+  <body>
+
+  <!--build:js scripts/vendor.min.js-->
+  <script src="bower_components/commonjs-require/commonjs-require.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+  <script src="bower_components/handlebars/handlebars.js"></script>
+  <!-- endbuild -->
+
+  <!--build:js scripts/main.min.js -->
+  <script src="dist/scripts/templates.js"></script>
+  <script src="dist/scripts/app.js"></script>
+  <!-- endbuild -->
+
+  <script>
+    require('main');
+  </script>
+
+</body>
+</html>
+

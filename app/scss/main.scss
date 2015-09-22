@@ -1,0 +1,21 @@
+@import '../../bower_components/bourbon/app/assets/stylesheets/bourbon';
+@import '../../bower_components/neat/app/assets/stylesheets/neat';
+
+// Typography
+$base-font-family: $helvetica;
+
+// Colors
+$blue: #477dca;
+$dark-gray: #333;
+$medium-gray: #999;
+$light-gray: #ddd;
+$very-light-gray: #fafafa;
+
+$base-font-color: $dark-gray;
+$base-background-color: $very-light-gray;
+
+body {
+  background-color: $base-background-color;
+  color: $base-font-color;
+  font-family: $base-font-family;
+}
