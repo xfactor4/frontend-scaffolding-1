@@ -1,8 +1,41 @@
-# Prepare your scaffolding
+# frontend-scaffolding
 
-Clone this repo and run the setup script:
+#### How to get started
 
-    git clone git://github.com/jacobthemyth/cool-scaffolding.git [name of your project]
-    cd [name of your project]
-    rm -rf .git
-    ./setup.sh
+1. Start your own project folder with a git clone
+
+    ```sh
+    cd ~/Code/
+    hub clone jacobthemyth/frontend-scaffolding NEWPROJECT
+    cd NEWPROJECT
+    ```
+
+2. Install prerequisites
+
+    ```sh
+    npm install
+    bower install
+    ```
+
+3. Start watching for changes
+
+    ```sh
+    gulp
+    ```
+
+4. Run your tests
+
+  ```sh
+  testem
+  ```
+
+5. Ready to push your code to GitHub Pages?
+
+    ```sh
+    # build production assets
+    gulp deploy
+    ```
+
+#### License
+
+MIT.

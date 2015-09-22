@@ -1,0 +1,15 @@
+{
+  "framework": "mocha+chai",
+  "src_files": [
+    "app/scripts/*.js",
+    "tests/*.js"
+  ],
+
+  "serve_files": [
+    "dist/scripts/**/*.js"
+  ],
+
+  "launch_in_dev": [
+    "PhantomJS"
+  ]
+}

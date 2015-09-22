@@ -1,25 +1,29 @@
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var useref = require('gulp-useref');
-var uglify = require('gulp-uglify');
-var plumber = require('gulp-plumber');
-var gulpIf = require('gulp-if');
-var minifyCSS = require('gulp-minify-css');
-var imagemin = require('gulp-imagemin');
-var cache = require('gulp-cache');
-var gutil = require('gulp-util');
-var sourcemaps = require('gulp-sourcemaps');
+/*
+ * Gulp plugins
+ */
+var gulp         = require('gulp');
+
 var autoprefixer = require('gulp-autoprefixer');
-var babel = require('gulp-babel');
-var concat = require('gulp-concat');
-var handlebars = require('gulp-handlebars');
-var wrap = require('gulp-wrap');
-var declare = require('gulp-declare');
-
-var browserSync = require('browser-sync');
-var del = require('del');
-var runSequence = require('run-sequence');
-
+var babel        = require('gulp-babel');
+var browserSync  = require('browser-sync');
+var cache        = require('gulp-cache');
+var concat       = require('gulp-concat');
+var declare      = require('gulp-declare');
+var del          = require('del');
+var ghPages      = require('gulp-gh-pages');
+var gulpIf       = require('gulp-if');
+var gutil        = require('gulp-util');
+var handlebars   = require('gulp-handlebars');
+var imagemin     = require('gulp-imagemin');
+var minifyCSS    = require('gulp-minify-css');
+var plumber      = require('gulp-plumber');
+var runSequence  = require('run-sequence');
+var sass         = require('gulp-sass');
+var sourcemaps   = require('gulp-sourcemaps');
+var uglify       = require('gulp-uglify');
+var useref       = require('gulp-useref');
+var wrap         = require('gulp-wrap');
+var wrapCommonjs = require('gulp-wrap-commonjs');
 
 gulp.task('sass', function () {
   return gulp.src('app/scss/**/*.scss')
@@ -38,7 +42,7 @@ gulp.task('scripts', function () {
   return gulp.src('app/scripts/**/*.js')
     .pipe(plumber())
     .pipe(babel())
-    .pipe($.wrapCommonjs({
+    .pipe(wrapCommonjs({
       relativePath: 'app/scripts',
       pathModifier: function (path) {
         return path.replace(/.js$/, '');
@@ -46,7 +50,7 @@ gulp.task('scripts', function () {
     }))
     .pipe(concat('app.js'))
     .pipe(gulp.dest('dist/scripts/'))
-    .pipe(reload({stream: true}));
+    .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('templates', function(){
@@ -60,7 +64,7 @@ gulp.task('templates', function(){
     }))
     .pipe(concat('templates.js'))
     .pipe(gulp.dest('dist/scripts/'))
-    .pipe(reload({stream: true}));
+    .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('images', function(){
@@ -77,13 +81,18 @@ gulp.task('fonts', function() {
   .pipe(gulp.dest('dist/fonts'))
 });
 
-gulp.task('clean', function() {
-  del('dist');
-  return cache.clearAll(callback);
+gulp.task('clean', function(done) {
+  del('dist').then(function(paths){
+    console.log('Deleted files/folders:\n', paths.join('\n'));
+    cache.clearAll(done);
+  });
 });
 
-gulp.task('clean:dist', function(callback){
-  del(['dist/**/*', '!dist/images', '!dist/images/**/*'], callback)
+gulp.task('clean:dist', function(done){
+  del(['dist/**/*', '!dist/images', '!dist/images/**/*']).then(function (paths) {
+    console.log('Deleted files/folders:\n', paths.join('\n'));
+    done();
+  });
 });
 
 gulp.task('useref', function(){
@@ -112,19 +121,27 @@ gulp.task('browserSync', function() {
 // gulp.task('build', ['scripts', 'templates', 'styles'], function(){});
 gulp.task('watch', ['browserSync', 'sass'], function(){
   gulp.watch('app/scss/**/*.scss', ['sass']);
-  // Reloads the browser whenever HTML or JS files change
+  gulp.watch('app/js/**/*.js', ['scripts']);
+  gulp.watch('templates/**/*.hbs', ['templates']);
+
+  // Reloads the browser whenever HTML files change
   gulp.watch('app/*.html', browserSync.reload);
-  gulp.watch('app/js/**/*.js', browserSync.reload);
-//   gulp.watch('templates/**/*.hbs', ['templates']);
-//   gulp.watch('scripts/**/*.js', ['scripts']);
 });
 
 gulp.task('build', function (callback) {
-  runSequence('clean:dist', ['sass', 'useref', 'images', 'fonts'], callback);
+  runSequence('clean:dist',
+    ['sass', 'scripts', 'templates', 'useref', 'images', 'fonts'],
+    callback
+  );
+});
+
+gulp.task('deploy', function() {
+  return gulp.src('./dist/**/*')
+    .pipe(ghPages());
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['sass','browserSync', 'watch'], callback);
+  runSequence(['sass', 'scripts', 'templates', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
