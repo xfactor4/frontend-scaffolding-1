@@ -23,13 +23,7 @@
     gulp
     ```
 
-4. Run your tests
-
-  ```sh
-  testem
-  ```
-
-5. Ready to push your code to GitHub Pages?
+4. Ready to push your code to GitHub Pages?
 
     ```sh
     # build production assets
