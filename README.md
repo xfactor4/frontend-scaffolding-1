@@ -8,6 +8,7 @@
     cd ~/Code/
     hub clone jacobthemyth/frontend-scaffolding NEWPROJECT
     cd NEWPROJECT
+    rm -rf .git
     ```
 
 2. Install prerequisites
