@@ -34,20 +34,6 @@
     gulp deploy
     ```
 
-#### Testing
-You will need to install the `testem` command line program:
-
-```sh
-npm install -g testem
-```
-
-Then in this project directory, you can run the tests:
-
-```sh
-testem # Runs the watcher that constantly reloads the tests
-testem ci # Runs the tests once
-```
-
 #### License
 
 MIT.
