@@ -101,7 +101,7 @@ gulp.task('clean:dist', function(done){
   });
 });
 
-gulp.task('useref', ['styles', 'scripts'], function(){
+gulp.task('useref', ['styles', 'scripts', 'templates'], function(){
   var assets = useref.assets({searchPath: ['.tmp', 'app', '.']});
 
   return gulp.src('app/*.html')
@@ -141,7 +141,7 @@ gulp.task('watch', ['browserSync', 'styles'], function(){
   gulp.watch('app/scss/**/*.scss', ['styles']);
   gulp.watch('app/js/**/*.js', ['scripts']);
   gulp.watch('templates/**/*.hbs', ['templates']);
-  gulp.watch('app/*.html', ['html']);
+  gulp.watch('app/*.html', ['useref']);
   gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep']);
