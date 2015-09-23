@@ -8,6 +8,7 @@ var babel        = require('gulp-babel');
 var browserSync  = require('browser-sync');
 var cache        = require('gulp-cache');
 var concat       = require('gulp-concat');
+var debug        = require('gulp-debug');
 var declare      = require('gulp-declare');
 var del          = require('del');
 var ghPages      = require('gulp-gh-pages');
@@ -15,6 +16,7 @@ var gulpIf       = require('gulp-if');
 var gutil        = require('gulp-util');
 var handlebars   = require('gulp-handlebars');
 var imagemin     = require('gulp-imagemin');
+var inject       = require('gulp-inject');
 var minifyCSS    = require('gulp-minify-css');
 var plumber      = require('gulp-plumber');
 var runSequence  = require('run-sequence');
@@ -125,13 +127,21 @@ gulp.task('wiredep', function() {
     .pipe(gulp.dest('app'));
 });
 
+// inject test scripts into test file
+gulp.task('tests:scripts', function () {
+  var tests = gulp.src(['tests/*.js'], {read: false}).pipe(debug());
+  return gulp.src('tests/index.html')
+    .pipe(inject(tests))
+    .pipe(gulp.dest('tests'));
+});
+
 gulp.task('browserSync', function() {
   browserSync({
-    open: false,
     server: {
       baseDir: ['.tmp', 'app'],
       routes: {
-        '/bower_components': 'bower_components'
+        '/bower_components': 'bower_components',
+        '/tests': 'tests'
       }
     },
   });
@@ -143,12 +153,13 @@ gulp.task('watch', ['browserSync', 'styles'], function(){
   gulp.watch('app/templates/**/*.hbs', ['templates']);
   gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
+  gulp.watch('tests/*.js', ['tests:scripts']);
   gulp.watch('bower.json', ['wiredep']);
 });
 
 gulp.task('build', function (callback) {
   runSequence('clean:dist',
-    ['styles', 'scripts', 'templates', 'wiredep', 'useref', 'images', 'fonts'],
+    ['styles', 'scripts', 'templates', 'wiredep', 'tests:scripts', 'useref', 'images', 'fonts'],
     callback
   );
 });
@@ -159,7 +170,7 @@ gulp.task('deploy', function() {
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'browserSync', 'watch'], callback);
+  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'tests:scripts', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
