@@ -1,7 +1,4 @@
-(function(){
-  'use strict';
-
-  $(document).ready(function(){
-    $('body').prepend(JST.application());
-  });
-})();
+$(document).ready(function(){
+  // prepend the contents of `app/templates/application.hbs` into `body`
+  $('body').prepend(JST.application());
+});
