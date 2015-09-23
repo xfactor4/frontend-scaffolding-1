@@ -143,7 +143,6 @@ gulp.task('watch', ['browserSync', 'styles'], function(){
   gulp.watch('app/templates/**/*.hbs', ['templates']);
   gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
-  gulp.watch('app/*.html', ['useref']);
   gulp.watch('bower.json', ['wiredep']);
 });
 
@@ -160,7 +159,7 @@ gulp.task('deploy', function() {
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'useref', 'browserSync', 'watch'], callback);
+  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
