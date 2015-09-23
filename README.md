@@ -34,6 +34,11 @@
     gulp deploy
     ```
 
+#### Testing
+
+- To write tests, create `.js` files in the `tests` directory. There is a sample `hello-test.js` to help you get started.
+- To run tests, open http://localhost:3000/tests in your browser
+
 #### License
 
 MIT.
