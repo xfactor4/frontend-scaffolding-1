@@ -129,10 +129,11 @@ gulp.task('wiredep', function() {
 
 // inject test scripts into test file
 gulp.task('tests:scripts', function () {
-  var tests = gulp.src(['tests/*.js'], {read: false}).pipe(debug());
+  var tests = gulp.src(['tests/*.js'], {read: false});
   return gulp.src('tests/index.html')
     .pipe(inject(tests))
-    .pipe(gulp.dest('tests'));
+    .pipe(gulp.dest('tests'))
+    .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('browserSync', function() {
