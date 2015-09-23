@@ -101,7 +101,7 @@ gulp.task('clean:dist', function(done){
   });
 });
 
-gulp.task('useref', ['styles', 'scripts', 'templates'], function(){
+gulp.task('useref', function(){
   var assets = useref.assets({searchPath: ['.tmp', 'app', '.']});
 
   return gulp.src('app/*.html')
@@ -139,10 +139,11 @@ gulp.task('browserSync', function() {
 
 gulp.task('watch', ['browserSync', 'styles'], function(){
   gulp.watch('app/scss/**/*.scss', ['styles']);
-  gulp.watch('app/js/**/*.js', ['scripts']);
-  gulp.watch('templates/**/*.hbs', ['templates']);
+  gulp.watch('app/scripts/**/*.js', ['scripts']);
+  gulp.watch('app/templates/**/*.hbs', ['templates']);
   gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
+  gulp.watch('app/*.html', ['useref']);
   gulp.watch('bower.json', ['wiredep']);
 });
 
@@ -159,7 +160,7 @@ gulp.task('deploy', function() {
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'browserSync', 'watch'], callback);
+  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'useref', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
