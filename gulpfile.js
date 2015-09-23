@@ -22,17 +22,18 @@ var sass         = require('gulp-sass');
 var sourcemaps   = require('gulp-sourcemaps');
 var uglify       = require('gulp-uglify');
 var useref       = require('gulp-useref');
+var wiredep      = require('wiredep').stream;
 var wrap         = require('gulp-wrap');
 var wrapCommonjs = require('gulp-wrap-commonjs');
 
-gulp.task('sass', function () {
+gulp.task('styles', function () {
   return gulp.src('app/scss/**/*.scss')
     .pipe(plumber(onError))
     .pipe(sourcemaps.init())
     .pipe(sass())
     .pipe(autoprefixer({browsers: ['last 2 versions']}))
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist/styles'))
+    .pipe(gulp.dest('.tmp/styles'))
     .pipe(browserSync.reload({
       stream: true
     }));
@@ -49,11 +50,11 @@ gulp.task('scripts', function () {
       }
     }))
     .pipe(concat('app.js'))
-    .pipe(gulp.dest('dist/scripts/'))
+    .pipe(gulp.dest('.tmp/scripts/'))
     .pipe(browserSync.reload({stream: true}));
 });
 
-gulp.task('templates', function(){
+gulp.task('templates', function() {
   gulp.src('app/templates/**/*.hbs')
     .pipe(plumber())
     .pipe(handlebars())
@@ -63,17 +64,22 @@ gulp.task('templates', function(){
       noRedeclare: true, // Avoid duplicate declarations
     }))
     .pipe(concat('templates.js'))
-    .pipe(gulp.dest('dist/scripts/'))
+    .pipe(gulp.dest('.tmp/scripts/'))
     .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('images', function(){
   return gulp.src('app/images/**/*.+(png|jpg|jpeg|gif|svg)')
-  // Caching images that ran through imagemin
-  .pipe(cache(imagemin({
-      interlaced: true
+    .pipe(plumber())
+    // Caching images that ran through imagemin
+    .pipe(cache(imagemin({
+      progressive: true,
+      interlaced: true,
+      // don't remove IDs from SVGs, they are often used
+      // as hooks for embedding and styling
+      svgoPlugins: [{cleanupIDs: false}]
     })))
-  .pipe(gulp.dest('dist/images'))
+    .pipe(gulp.dest('dist/images'))
 });
 
 gulp.task('fonts', function() {
@@ -95,8 +101,8 @@ gulp.task('clean:dist', function(done){
   });
 });
 
-gulp.task('useref', function(){
-  var assets = useref.assets();
+gulp.task('useref', ['styles', 'scripts'], function(){
+  var assets = useref.assets({searchPath: ['.tmp', 'app', '.']});
 
   return gulp.src('app/*.html')
     .pipe(assets)
@@ -109,28 +115,41 @@ gulp.task('useref', function(){
     .pipe(gulp.dest('dist'))
 });
 
+// inject bower components
+gulp.task('wiredep', function() {
+  gulp.src('app/*.html')
+    .pipe(wiredep({
+      ignorePath: /^(\.\.\/)+/,
+      exclude: [ 'bower_components/modernizr/modernizr.js' ]
+    }))
+    .pipe(gulp.dest('app'));
+});
+
 gulp.task('browserSync', function() {
   browserSync({
     open: false,
     server: {
-      baseDir: 'app'
+      baseDir: ['.tmp', 'app'],
+      routes: {
+        '/bower_components': 'bower_components'
+      }
     },
-  })
+  });
 });
 
-// gulp.task('build', ['scripts', 'templates', 'styles'], function(){});
-gulp.task('watch', ['browserSync', 'sass'], function(){
-  gulp.watch('app/scss/**/*.scss', ['sass']);
+gulp.task('watch', ['browserSync', 'styles'], function(){
+  gulp.watch('app/scss/**/*.scss', ['styles']);
   gulp.watch('app/js/**/*.js', ['scripts']);
   gulp.watch('templates/**/*.hbs', ['templates']);
-
-  // Reloads the browser whenever HTML files change
-  gulp.watch('app/*.html', browserSync.reload);
+  gulp.watch('app/*.html', ['html']);
+  gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
+  gulp.watch('app/fonts/**/*', ['fonts']);
+  gulp.watch('bower.json', ['wiredep']);
 });
 
 gulp.task('build', function (callback) {
   runSequence('clean:dist',
-    ['sass', 'scripts', 'templates', 'useref', 'images', 'fonts'],
+    ['styles', 'scripts', 'templates', 'wiredep', 'useref', 'images', 'fonts'],
     callback
   );
 });
@@ -141,7 +160,7 @@ gulp.task('deploy', function() {
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['sass', 'scripts', 'templates', 'browserSync', 'watch'], callback);
+  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
