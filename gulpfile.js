@@ -124,7 +124,7 @@ gulp.task('wiredep', function() {
       ignorePath: /^(\.\.\/)+/,
       exclude: [ 'bower_components/modernizr/modernizr.js' ]
     }))
-    .pipe(gulp.dest('app'));
+    .pipe(gulp.dest('app'))
     .pipe(browserSync.reload({stream: true}));
 });
 
