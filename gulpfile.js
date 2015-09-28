@@ -103,7 +103,7 @@ gulp.task('clean:dist', function(done){
   });
 });
 
-gulp.task('useref', function(){
+gulp.task('useref', ['styles', 'scripts', 'templates'], function(){
   var assets = useref.assets({searchPath: ['.tmp', 'app', '.']});
 
   return gulp.src('app/*.html')
@@ -125,6 +125,7 @@ gulp.task('wiredep', function() {
       exclude: [ 'bower_components/modernizr/modernizr.js' ]
     }))
     .pipe(gulp.dest('app'));
+    .pipe(browserSync.reload({stream: true}));
 });
 
 // inject test scripts into test file
@@ -160,12 +161,12 @@ gulp.task('watch', ['browserSync', 'styles'], function(){
 
 gulp.task('build', function (callback) {
   runSequence('clean:dist',
-    ['styles', 'scripts', 'templates', 'wiredep', 'tests:scripts', 'useref', 'images', 'fonts'],
+    ['wiredep', 'tests:scripts', 'useref', 'images', 'fonts'],
     callback
   );
 });
 
-gulp.task('deploy', function() {
+gulp.task('deploy', ['build'], function() {
   return gulp.src('./dist/**/*')
     .pipe(ghPages());
 });
