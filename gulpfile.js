@@ -128,6 +128,16 @@ gulp.task('wiredep', function() {
     .pipe(browserSync.reload({stream: true}));
 });
 
+gulp.task('wiredep:tests', function() {
+  gulp.src('tests/*.html')
+    .pipe(wiredep({
+      ignorePath: /^(\.\.\/)+/,
+      exclude: [ 'bower_components/modernizr/modernizr.js' ]
+    }))
+    .pipe(gulp.dest('tests'))
+    .pipe(browserSync.reload({stream: true}));
+});
+
 // inject test scripts into test file
 gulp.task('tests:scripts', function () {
   var tests = gulp.src(['tests/*.js'], {read: false});
@@ -143,6 +153,7 @@ gulp.task('browserSync', function() {
       baseDir: ['.tmp', 'app'],
       routes: {
         '/bower_components': 'bower_components',
+        '/tests/bower_components': 'bower_components',
         '/tests': 'tests'
       }
     },
@@ -156,12 +167,12 @@ gulp.task('watch', ['browserSync', 'styles'], function(){
   gulp.watch('app/images/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('tests/*.js', ['tests:scripts']);
-  gulp.watch('bower.json', ['wiredep']);
+  gulp.watch('bower.json', ['wiredep', 'wiredep:tests']);
 });
 
 gulp.task('build', function (callback) {
   runSequence('clean:dist',
-    ['wiredep', 'tests:scripts', 'useref', 'images', 'fonts'],
+    ['wiredep', 'wiredep:tests', 'tests:scripts', 'useref', 'images', 'fonts'],
     callback
   );
 });
@@ -172,7 +183,7 @@ gulp.task('deploy', ['build'], function() {
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'tests:scripts', 'browserSync', 'watch'], callback);
+  runSequence(['styles', 'scripts', 'templates', 'wiredep', 'wiredep:tests', 'tests:scripts', 'browserSync', 'watch'], callback);
 });
 
 function onError(error){
