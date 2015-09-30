@@ -64,6 +64,9 @@ gulp.task('templates', function() {
     .pipe(declare({
       namespace: 'JST',
       noRedeclare: true, // Avoid duplicate declarations
+      processName: function(filePath) {
+        return declare.processNameByPath(filePath.replace('app/templates/', '')).replace('.', '/');
+      }
     }))
     .pipe(concat('templates.js'))
     .pipe(gulp.dest('.tmp/scripts/'))

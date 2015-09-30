@@ -3,7 +3,7 @@ var CreateBookView = Backbone.View.extend({
   tagName: 'form',
   className: 'create-book',
 
-  template: JST['create'],
+  template: JST['books/create'],
 
   events: {
     'submit': 'createBook'
