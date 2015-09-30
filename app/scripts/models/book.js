@@ -11,10 +11,10 @@ var Book = Backbone.Model.extend({
 
   validate: function(attributes) {
     var errors = {};
-    if(!attributes.title.length){
+    if(_.isEmpty(attributes.title)){
       errors.title = "Must have a valid title";
     }
-    if(!attributes.author.length){
+    if(_.isEmpty(attributes.author)){
       errors.author = "Must have a valid author";
     }
     return _.keys(errors).length ? errors : undefined;
